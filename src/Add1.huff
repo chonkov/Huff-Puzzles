@@ -13,5 +13,43 @@
 
 
 #define macro MAIN() = takes(0) returns(0) {
+   // get first 4 bytes
+   0x00
+   calldataload
+   0xe0
+   shr
 
+   // compare func signatures
+   __FUNC_SIG(add1)
+   eq
+   addition
+   jumpi
+
+   // revert if signs don't match
+   0x00
+   0x00
+   revert
+
+   addition:
+   // store in memory the provided func arg
+   0x20
+   0x04
+   0x00
+   calldatacopy
+
+   // add 1 to stored value
+   0x00
+   mload
+
+   0x01
+   
+   add
+   
+   // store value + 1
+   0x00
+   mstore
+
+   0x20
+   0x00
+   return
 }
