@@ -12,5 +12,54 @@
 
 
 #define macro MAIN() = takes(0) returns(0) {
+   0x00 calldataload 0xe0 shr
 
+   __FUNC_SIG(sumArray) eq
+   sum jumpi
+
+   0x00 0x00 revert
+
+   sum:
+   0x00 // sum
+   0x00 // index
+   0x04 calldataload 0x04 add // calldata index
+   dup1
+   calldataload // length
+
+   // 0x04 - length
+   // 0x24 - calldata
+   // 0x00 - index
+   // 0x00 - sum
+
+   forloop:
+
+   // check if index & length are equal
+   dup1
+   dup4
+   eq end jumpi
+
+   // increment index
+   swap2
+   0x01 add
+   swap2
+
+   // get value
+   swap1
+   0x20 add
+   swap1
+   dup2
+   calldataload
+
+   // add to sum
+   dup5
+   add
+   swap4
+   pop
+
+   forloop jump
+
+   end:
+   dup4 // copy sum on top of stack
+   0x00 mstore
+   0x20 0x00 return
 }
