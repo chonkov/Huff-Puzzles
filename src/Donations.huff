@@ -8,22 +8,25 @@
 #define function donated(address) payable returns(uint256)
 
 #define macro MAIN() = takes(0) returns(0) {
+   0x00 0x20 mstore
+   caller 0x00 mstore
+   0x40 0x00 sha3
+
    0x00 calldataload 0xe0 shr
    
    __FUNC_SIG(donated) eq donated jumpi
 
-   0x00 calldataload iszero store jumpi
-
-   0x00 0x00 revert
-
-   store:
-   0x00 sload
+   dup1
+   
+   sload
    callvalue
    add
-   0x00 sstore
+   swap1
+   sstore
    stop
 
    donated:
-   0x00 sload 0x00 mstore
+   sload
+   0x00 mstore
    0x20 0x00 return
 }
