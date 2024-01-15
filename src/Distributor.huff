@@ -14,5 +14,34 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-   
+   0x00 calldataload 0xe0 shr
+
+   0x24 calldataload 0x00 eq error jumpi
+
+   __FUNC_SIG(distribute) eq distribute jumpi
+
+   error jump
+
+   distribute:
+   0x00 // index
+   0x24 calldataload callvalue div // value
+   0x24 // calldata index
+   0x24 calldataload // length
+
+   forloop:
+   dup1
+   dup5
+   eq end jumpi // check
+   swap3 0x01 add swap3 // increment
+   swap1 0x20 add dup1 swap2 swap1 calldataload // increment calldata
+   0x00 0x00 0x00 0x00 swap4 dup8 swap1 gas call // send ether
+   iszero error jumpi
+
+   forloop jump
+
+   end:
+   0x00 0x00 return
+
+   error:
+   0x00 0x00 revert
  }
