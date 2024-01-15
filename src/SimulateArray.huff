@@ -25,5 +25,87 @@
  #define error ZeroArray()
 
  #define macro MAIN() = takes(0) returns(0) {
-    
+   0x00 calldataload 0xe0 shr
+
+   dup1 __FUNC_SIG(pushh) eq pushh jumpi
+   dup1 __FUNC_SIG(popp) eq popp jumpi
+   dup1 __FUNC_SIG(read) eq read jumpi
+   dup1 __FUNC_SIG(length) eq length jumpi
+   dup1 __FUNC_SIG(write) eq write jumpi
+
+   error jump
+
+   pushh:
+   pop
+   pc 0x08 add
+   keccak jump
+   jumpdest
+
+   0x00 sload
+   dup1
+   swap2 add
+   0x04 calldataload swap1 sstore
+   0x01 add 0x00 sstore
+   
+   stop
+
+   popp:
+   pop
+   pc 0x08 add
+   keccak jump
+   jumpdest
+
+   0x00 sload
+   dup1 0x00 eq errorZeroArray jumpi
+   0x01 swap1 sub dup1 0x00 sstore
+   add
+   0x00 swap1 sstore
+
+   stop
+
+   read:
+   0x04 calldataload
+   dup1
+   0x00 sload gt iszero errorOutOfBounds jumpi
+
+   pc 0x08 add
+   keccak jump
+   jumpdest
+
+   add sload 0x00 mstore
+   0x20 0x00 return
+
+   length:
+   pop
+   0x00 sload 0x00 mstore
+   0x20 0x00 return
+
+   write:
+   0x04 calldataload
+   dup1
+   0x00 sload gt iszero errorOutOfBounds jumpi
+
+   pc 0x08 add
+   keccak jump
+   jumpdest
+
+   add 0x24 calldataload swap1 sstore
+   
+   stop
+
+   keccak:
+   0x00 0x00 mstore
+   0x20 0x00 sha3
+   swap1 jump
+
+   error:
+   0x00 0x00 revert
+
+   errorOutOfBounds:
+   __ERROR(OutOfBounds) 0x00 mstore
+   0x04 0x00 revert
+
+   errorZeroArray:
+   __ERROR(ZeroArray) 0x00 mstore
+   0x04 0x00 revert
  }
